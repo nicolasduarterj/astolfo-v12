@@ -55,5 +55,15 @@ const PlayerCharacterSchema = mongoose.Schema({
 
 PlayerCharacterSchema.index({ name: 1, ownerUUID: 1}, { unique: true });
 
+/**
+ * 
+ * @param {Number} damage 
+ * @returns {Number} current hp
+ */
+PlayerCharacterSchema.methods.damage = function(damage) {
+    this.hp = Math.max(0, this.hp - damage);
+    return this.hp;
+}
+
 const PlayerCharacter = mongoose.model('PlayerCharacter', PlayerCharacterSchema);
 module.exports= PlayerCharacter;
