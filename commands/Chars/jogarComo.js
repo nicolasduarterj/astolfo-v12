@@ -18,6 +18,7 @@ async function autocomplete(interaction) {
     await interaction.respond(filteredPlayerChars.map(name => ({ name, value: name })))
 }
 
+//TODO: Provavelmente poderia refatorar isso usando findOneAndUpdate, mas...
 async function execute(interaction) {
     await interaction.reply({ content: 'Processando...', ephemeral: true });
     const desiredCharName = interaction.options.getString('char');
