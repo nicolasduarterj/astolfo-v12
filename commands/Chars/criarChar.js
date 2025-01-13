@@ -27,8 +27,8 @@ async function execute(interaction) {
         name: responses.name,
         baseHP: responses.baseHP,
         hp: responses.baseHP,
-        initiative: Number(responses.initiative),
-        initiativeAdvantage: responses.initiativeAdvantage.toLowerCase() === 'S',
+        initiativeBonus: Number(responses.initiative),
+        initiativeAdvantage: responses.initiativeAdvantage.toLowerCase() === 's',
         ownerUUID: interaction.user.id
     });
 
