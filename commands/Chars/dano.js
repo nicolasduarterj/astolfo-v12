@@ -22,7 +22,7 @@ async function execute(interaction) {
     currentChar.damage(damagePoints);
     try {
         await currentChar.save();
-        await interaction.editReply('```elm\n' + `${currentChar.name} sofreu ${damage_points} de dano e ficou com ${currentChar.hp} pontos de vida\n` + '```');
+        await interaction.editReply('```elm\n' + `${currentChar.name} sofreu ${damagePoints} de dano e ficou com ${currentChar.hp} pontos de vida\n` + '```');
     } catch(error) {
         console.log(error);
         await interaction.editReply('```diff\n- Houve um erro inesperado\n```');
