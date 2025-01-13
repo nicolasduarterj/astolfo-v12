@@ -49,7 +49,10 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 })
 
-client.once(Events.ClientReady, readyClient => {
+client.once(Events.ClientReady, async readyClient => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+    await mongoose.connect('mongodb://127.0.0.1:27017/astolfo');
+    console.log('Connected to MongoDB')
 });
+
 client.login(process.env.BOT_TOKEN);
