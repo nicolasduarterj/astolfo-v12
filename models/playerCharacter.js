@@ -65,5 +65,15 @@ PlayerCharacterSchema.methods.damage = function(damage) {
     return this.hp;
 }
 
+/**
+ * 
+ * @param {Number} heal_points 
+ * @returns {Number} current hp
+ */
+PlayerCharacterSchema.methods.heal = function(heal_points) {
+    this.hp = Math.min(this.baseHP, this.hp + heal_points);
+    return this.hp;
+}
+
 const PlayerCharacter = mongoose.model('PlayerCharacter', PlayerCharacterSchema);
 module.exports= PlayerCharacter;
