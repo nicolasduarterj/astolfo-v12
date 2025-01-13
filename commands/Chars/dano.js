@@ -13,13 +13,13 @@ const commandData = new SlashCommandBuilder()
 
 async function execute(interaction) {
     await interaction.reply('Processando...');
-    const damage_points = interaction.options.getNumber('dano');
+    const damagePoints = interaction.options.getNumber('dano');
     const currentChar = await PlayerCharacter.findOne({ ownerUUID: interaction.user.id, worn: true })
     if (!currentChar) {
         await interaction.editReply('```diff\n- Você não está jogando como um personagem. Use /jogarcomo.\n```');
         return;
     }
-    currentChar.damage(damage_points);
+    currentChar.damage(damagePoints);
     try {
         await currentChar.save();
         await interaction.editReply('```elm\n' + `${currentChar.name} sofreu ${damage_points} de dano e ficou com ${currentChar.hp} pontos de vida\n` + '```');
