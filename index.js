@@ -29,22 +29,28 @@ for (const folder of commandFolders) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) {
         console.error(`Comando não encontrado! (${interaction.commandName})`);
         return;
     }
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'Erro processando seu comando' });
-        } else {
-            await interaction.reply({ content: 'Erro processando seu comando'});
+    if (interaction.isChatInputCommand()) {
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'Erro processando seu comando' });
+            } else {
+                await interaction.reply({ content: 'Erro processando seu comando'});
+            }
+        }
+    } else if (interaction.isAutocomplete()) {
+        console.log('autocomplete')
+        try {
+            await command.autocomplete(interaction);
+        } catch (error) {
+            console.error(error);
         }
     }
 })
