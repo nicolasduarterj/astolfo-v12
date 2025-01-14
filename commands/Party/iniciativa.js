@@ -27,8 +27,7 @@ async function execute(interaction) {
     
     let message = rollings.reduce(
         (acc, char) => acc + `${char.name}: ${char.roll}\n`,
-        '```elm\nIniciativa' + ` (${rollDateString}, tipo: party do ${type})\n\n`
-    );
+        '```elm\nIniciativa' + ` (${rollDateString}, tipo: party do ${type})\n\n`);
     message += '```';
     await interaction.editReply(message);
     return;
