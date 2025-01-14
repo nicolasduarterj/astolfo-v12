@@ -2,7 +2,6 @@
  * Rolls diceNumber dDiceType (e.g. 2 d20)
  * @param {Number} diceType 
  * @param {Number} diceNumber  
- * @param {'advantage' | 'neutral' | 'disadvantage'} advantage 
  * @returns {{rolls: [Number], biggest: Number, smallest: Number, }}
  */
 function rollDice(diceNumber, diceType) {
