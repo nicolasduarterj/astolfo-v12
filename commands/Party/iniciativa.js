@@ -25,12 +25,12 @@ async function execute(interaction) {
         return;
     }
 
-    const playerRollings = party
+    const rollings = party
         .concat(enemies)
         .map(char => ({ name: char.name, roll: char.rollInitiative() }))
         .toSorted((rollA, rollB) => rollB.roll - rollA.roll);
-        
-    let message = playerRollings.reduce(
+
+    let message = rollings.reduce(
         (acc, char) => acc + `${char.name}: ${char.roll}\n`,
         '```elm\nIniciativa' + ` (${rollDateString}, tipo: party do ${type})\n\n`);
     message += '```';
