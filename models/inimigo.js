@@ -30,5 +30,14 @@ const enemySchema = mongoose.Schema({
 
 enemySchema.index({ name: 1, ownerUUID: 1}, { unique: true });
 
+enemySchema.methods.rollInitiative = function() {
+    const dice1 = Math.floor(Math.random() * 20) + 1;
+    if (this.initiativeAdvantage) {
+        const dice2 = Math.floor(Math.random() * 20) + 1;
+        return Math.max(dice1, dice2) + this.initiativeBonus;
+    }
+    return dice1 + this.initiativeBonus;
+}
+
 const Enemy = mongoose.model('Enemy', enemySchema);
 module.exports = Enemy;

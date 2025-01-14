@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const PlayerCharacter = require('../../models/playerCharacter');
-const date = require('date-and-time')
+const date = require('date-and-time');
+const Enemy = require('../../models/inimigo');
 
 const commandData = new SlashCommandBuilder()
                             .setName('iniciativa')
@@ -14,6 +15,7 @@ async function execute(interaction) {
     const party = await PlayerCharacter.find({ partyID: partyID });
     const rollDate = new Date();
     const rollDateString = date.format(rollDate, 'DD/MM HH:mm');
+    const enemies = await Enemy.find({ ownerUUID: partyID });
 
     if (!party || party.length === 0) {
         await interaction.editReply('```\nNão consegui achar nenhum player na party. Verifique:\n\n' +
@@ -23,9 +25,12 @@ async function execute(interaction) {
         return;
     }
 
-    const rollings = party.map(char => ({ name: char.name, roll: char.rollInitiative() })).toSorted((rollA, rollB) => rollB.roll - rollA.roll);
-    
-    let message = rollings.reduce(
+    const playerRollings = party
+        .concat(enemies)
+        .map(char => ({ name: char.name, roll: char.rollInitiative() }))
+        .toSorted((rollA, rollB) => rollB.roll - rollA.roll);
+        
+    let message = playerRollings.reduce(
         (acc, char) => acc + `${char.name}: ${char.roll}\n`,
         '```elm\nIniciativa' + ` (${rollDateString}, tipo: party do ${type})\n\n`);
     message += '```';
