@@ -75,5 +75,14 @@ PlayerCharacterSchema.methods.heal = function(heal_points) {
     return this.hp;
 }
 
+PlayerCharacterSchema.methods.rollInitiative = function() {
+    const dice1 = Math.floor(Math.random() * 20) + 1;
+    if (this.initiativeAdvantage) {
+        const dice2 = Math.floor(Math.random() * 20) + 1;
+        return Math.max(dice1, dice2) + this.initiativeBonus;
+    }
+    return dice1 + this.initiativeBonus;
+}
+
 const PlayerCharacter = mongoose.model('PlayerCharacter', PlayerCharacterSchema);
 module.exports= PlayerCharacter;

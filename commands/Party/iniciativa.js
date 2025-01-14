@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const PlayerCharacter = require('../../models/playerCharacter');
 const date = require('date-and-time')
-const diceUtils = require('../../misc/diceUtils');
 
 const commandData = new SlashCommandBuilder()
                             .setName('iniciativa')
@@ -17,15 +16,14 @@ async function execute(interaction) {
     const rollDateString = date.format(rollDate, 'DD/MM HH:mm');
 
     if (!party || party.length === 0) {
-        await interaction.editReply('```\nNão consegui achar nenhum player na party. Verifique:\n\n1)Você não está jogando como um personagem, use /jogarcomo\n2)Seu personagem atual não está em uma party.\n3)Sua party não tem nenhum jogador.\n```');
+        await interaction.editReply('```\nNão consegui achar nenhum player na party. Verifique:\n\n' +
+            '1)Você não está jogando como um personagem, use /jogarcomo\n' +
+            '2)Seu personagem atual não está em uma party.\n' +
+            '3)Sua party não tem nenhum jogador.\n```');
         return;
     }
 
-    const rollings = party.map(char => {
-        const roll = diceUtils.rollDice(20, 2);
-        const usedRoll = char.initiativeAdvantage ? roll.biggest : roll.rolls[0];
-        return { name: char.name, roll: usedRoll + char.initiativeBonus }
-    }).toSorted((rollA, rollB) => rollB.roll - rollA.roll);
+    const rollings = party.map(char => ({ name: char.name, roll: char.rollInitiative() })).toSorted((rollA, rollB) => rollB.roll - rollA.roll);
     
     let message = rollings.reduce(
         (acc, char) => acc + `${char.name}: ${char.roll}\n`,

@@ -5,7 +5,7 @@
  * @param {'advantage' | 'neutral' | 'disadvantage'} advantage 
  * @returns {{rolls: [Number], biggest: Number, smallest: Number, }}
  */
-function rollDice(diceType, diceNumber) {
+function rollDice(diceNumber, diceType) {
     const rolls = [];
     for (let i = 0; i < diceNumber; i++)
         rolls[i] = Math.floor(Math.random() * diceType) + 1;
