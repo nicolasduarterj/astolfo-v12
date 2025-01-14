@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const PlayerCharacter = require('../../models/playerCharacter');
 const date = require('date-and-time')
+const diceUtils = require('../../misc/diceUtils');
 
 const commandData = new SlashCommandBuilder()
                             .setName('iniciativa')
@@ -20,17 +21,12 @@ async function execute(interaction) {
         return;
     }
 
-    const rollings = party
-        .map(char => {
-            const dice1 = Math.floor(Math.random() * 20) + 1;
-            let finaldice = dice1;
-            if (char.initiativeAdvantage) {
-                const dice2 = Math.floor(Math.random() * 20) + 1;
-                finaldice = Math.max(dice1, dice2);
-            }
-            return { name: char.name, roll: finaldice + char.initiativeBonus };
-        })
-        .toSorted((rollA, rollB) => rollB.roll - rollA.roll);
+    const rollings = party.map(char => {
+        const roll = diceUtils.rollDice(20, 2);
+        const usedRoll = char.initiativeAdvantage ? roll.biggest : roll.rolls[0];
+        return { name: char.name, roll: usedRoll + char.initiativeBonus }
+    }).toSorted((rollA, rollB) => rollB.roll - rollA.roll);
+    
     let message = rollings.reduce(
         (acc, char) => acc + `${char.name}: ${char.roll}\n`,
         '```elm\nIniciativa' + ` (${rollDateString}, tipo: party do ${type})\n\n`
