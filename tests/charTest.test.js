@@ -7,6 +7,8 @@ const FakeInteraction = require('./testUtils/fakeInteraction');
 const createChar = require('../commands/Chars/criarChar');
 const dano = require('../commands/Chars/dano');
 const cura = require('../commands/Chars/cura');
+const excluirChar = require('../commands/Chars/excluirChar');
+const jogarcomo = require('../commands/Chars/jogarComo');
 
 beforeAll(async () => {
     await mongoose.connect(process.env.TEST_DB_URI);
@@ -175,6 +177,99 @@ test('Cannot heal without a worn character', async () => {
     const newChar = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
     expect(interaction.results[interaction.results.length - 1]).toMatch(/Use \/jogarcomo\./);
     expect(newChar.hp).toBe(12);
+})
+
+test('Excluding a character works', async () => {
+    await PlayerCharacter.create({
+        name: 'Raz-alki',
+        baseHP: 12,
+        hp: 12,
+        initiativeBonus: 2,
+        initiativeAdvantage: true,
+        ownerUUID: '111',
+        partyID: null,
+        worn: true,
+    });
+
+    const interaction = new FakeInteraction([{ name: 'char', value: 'Raz-alki' }], '111');
+    await excluirChar.execute(interaction);
+    const endChar = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki'});
+    expect(endChar).toBe(null);
+    expect(interaction.results[interaction.results.length - 1]).toMatch(/Personagem deletado/);
+});
+
+test('Wearing a character works', async () => {
+    await PlayerCharacter.create({
+        name: 'Raz-alki',
+        baseHP: 12,
+        hp: 12,
+        initiativeBonus: 2,
+        initiativeAdvantage: true,
+        ownerUUID: '111',
+        partyID: null,
+        worn: false,
+    });
+
+    const interaction = new FakeInteraction([{ name: 'char', value: 'Raz-alki' }], '111');
+    await jogarcomo.execute(interaction);
+    const endChar = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
+    expect(endChar.worn).toBe(true);
+    expect(interaction.results[interaction.results.length - 1]).toMatch(/agora está jogando como/);
+})
+
+test('Wearing the same character twice works', async () => {
+    await PlayerCharacter.create({
+        name: 'Raz-alki',
+        baseHP: 12,
+        hp: 12,
+        initiativeBonus: 2,
+        initiativeAdvantage: true,
+        ownerUUID: '111',
+        partyID: null,
+        worn: false,
+    });
+
+    const interaction = new FakeInteraction([{ name: 'char', value: 'Raz-alki' }], '111');
+    await jogarcomo.execute(interaction);
+    const secondInteraction = new FakeInteraction([{ name: 'char', value: 'Raz-alki' }], '111');
+    await jogarcomo.execute(secondInteraction);
+    const endChar = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
+    expect(endChar.worn).toBe(true);
+    expect(secondInteraction.results[secondInteraction.results.length - 1]).toMatch(/já está jogando como/);
+
+})
+
+test('Swapping between characters works', async () => {
+    await PlayerCharacter.create({
+        name: 'Raz-alki',
+        baseHP: 12,
+        hp: 12,
+        initiativeBonus: 2,
+        initiativeAdvantage: true,
+        ownerUUID: '111',
+        partyID: null,
+        worn: false,
+    });
+
+    await PlayerCharacter.create({
+        name: 'Ilia',
+        baseHP: 12,
+        hp: 12,
+        initiativeBonus: 2,
+        initiativeAdvantage: true,
+        ownerUUID: '111',
+        partyID: null,
+        worn: false,
+    });
+    const interaction = new FakeInteraction([{ name: 'char', value: 'Raz-alki' }], '111');
+    const secondInteraction = new FakeInteraction([{ name: 'char', value: 'Ilia' }], '111');
+
+    await jogarcomo.execute(interaction);
+    await jogarcomo.execute(secondInteraction);
+    const endCharRaz = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
+    const endCharIlia = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Ilia' });
+    expect(endCharRaz.worn).toBe(false);
+    expect(endCharIlia.worn).toBe(true);
 })
 
 afterAll(async () => {
