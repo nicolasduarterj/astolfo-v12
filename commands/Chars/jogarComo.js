@@ -24,10 +24,17 @@ async function execute(interaction) {
     const desiredCharName = interaction.options.getString('char');
     console.log(desiredCharName);
     const desiredChar = await PlayerCharacter.findOne({ ownerUUID: interaction.user.id, name: desiredCharName })
+    const alreadyWornChar = await PlayerCharacter.findOne({ ownerUUID: interaction.user.id, worn: true });
     if (!desiredChar) {
         await interaction.editReply('```diff\n- Não achei esse personagem.\n```');
         return;
     }
+
+    if (desiredChar.name === alreadyWornChar?.name) {
+        await interaction.editReply('```fix\n Você já está jogando como esse personagem\n```');
+        return;
+    }
+
     const mongooseSession = await mongoose.startSession();
     mongooseSession.startTransaction();
     try {
