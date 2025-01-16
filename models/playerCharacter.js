@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const spellsInfoSchema = require('./spellsInfo');
 const Xregexp = require('xregexp');
+const initiativeParticipantSchema = require('./initiativeParticipant');
 
 const PlayerCharacterSchema = mongoose.Schema({
     name: {
@@ -30,15 +31,6 @@ const PlayerCharacterSchema = mongoose.Schema({
         cast: 'O HP deve ser um número',
         required: [true, 'Está faltando o hp'],
     },
-    initiativeBonus: {
-        cast: 'O bônus de iniciativa deve ser um número',
-        type: mongoose.SchemaTypes.Number,
-        default: 0,
-    },
-    initiativeAdvantage: {
-        type: mongoose.SchemaTypes.Boolean,
-        default: false,
-    },
     partyID: {
         type: mongoose.SchemaTypes.String,
         default: null,
@@ -53,7 +45,15 @@ const PlayerCharacterSchema = mongoose.Schema({
     },
 });
 
+PlayerCharacterSchema.add(initiativeParticipantSchema);
+
 PlayerCharacterSchema.index({ name: 1, ownerUUID: 1}, { unique: true });
+
+PlayerCharacterSchema.pre('save', function(next) {
+    if (this.hp > this.baseHP)
+        this.hp = this.baseHP;
+    return next();
+})
 
 /**
  * 
@@ -73,15 +73,6 @@ PlayerCharacterSchema.methods.damage = function(damage) {
 PlayerCharacterSchema.methods.heal = function(heal_points) {
     this.hp = Math.min(this.baseHP, this.hp + heal_points);
     return this.hp;
-}
-
-PlayerCharacterSchema.methods.rollInitiative = function() {
-    const dice1 = Math.floor(Math.random() * 20) + 1;
-    if (this.initiativeAdvantage) {
-        const dice2 = Math.floor(Math.random() * 20) + 1;
-        return Math.max(dice1, dice2) + this.initiativeBonus;
-    }
-    return dice1 + this.initiativeBonus;
 }
 
 const PlayerCharacter = mongoose.model('PlayerCharacter', PlayerCharacterSchema);

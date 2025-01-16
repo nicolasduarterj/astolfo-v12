@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Xregexp = require('xregexp');
+const initiativeParticipantSchema = require('./initiativeParticipant');
 
 const enemySchema = mongoose.Schema({
     name: {
@@ -13,31 +14,15 @@ const enemySchema = mongoose.Schema({
             message: 'Nome inválido'
         }
     },
-    initiativeBonus: {
-        type: mongoose.SchemaTypes.Number,
-        cast: 'O bônus de iniciativa deve ser um número',
-        default: 0,
-    },
-    initiativeAdvantage: {
-        type: mongoose.SchemaTypes.Boolean,
-        default: false
-    },
     ownerUUID: {
         type: mongoose.SchemaTypes.String,
         required: true,
     },
 });
 
-enemySchema.index({ name: 1, ownerUUID: 1}, { unique: true });
+enemySchema.add(initiativeParticipantSchema);
 
-enemySchema.methods.rollInitiative = function() {
-    const dice1 = Math.floor(Math.random() * 20) + 1;
-    if (this.initiativeAdvantage) {
-        const dice2 = Math.floor(Math.random() * 20) + 1;
-        return Math.max(dice1, dice2) + this.initiativeBonus;
-    }
-    return dice1 + this.initiativeBonus;
-}
+enemySchema.index({ name: 1, ownerUUID: 1}, { unique: true });
 
 const Enemy = mongoose.model('Enemy', enemySchema);
 module.exports = Enemy;
