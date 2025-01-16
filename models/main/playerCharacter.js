@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const spellsInfoSchema = require('./spellsInfo');
+const spellsInfoSchema = require('../subdocuments/spellsInfo');
 const Xregexp = require('xregexp');
-const initiativeParticipantSchema = require('./initiativeParticipant');
+const initiativeParticipantSchema = require('../base/initiativeParticipant');
 
 const PlayerCharacterSchema = mongoose.Schema({
     name: {

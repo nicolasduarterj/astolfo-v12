@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modalBuilder = require('../../misc/modalBuilder');
-const PlayerCharacter = require('../../models/playerCharacter');
+const PlayerCharacter = require('../../models/main/playerCharacter');
 const modalRetrieve = require('../../misc/modalRetrieve');
 
 const commandData = new SlashCommandBuilder()

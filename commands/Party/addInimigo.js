@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modalBuilder = require('../../misc/modalBuilder');
 const modalRetrieve = require('../../misc/modalRetrieve');
-const Enemy = require('../../models/inimigo');
+const Enemy = require('../../models/main/inimigo');
 
 const commandData = new SlashCommandBuilder()
                             .setName('novoinimigo')

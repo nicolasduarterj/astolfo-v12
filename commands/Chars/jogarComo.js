@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const PlayerCharacter = require('../../models/playerCharacter');
+const PlayerCharacter = require('../../models/main/playerCharacter');
 const mongoose = require('mongoose');
 
 const commandData = new SlashCommandBuilder()

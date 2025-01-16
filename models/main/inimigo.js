@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Xregexp = require('xregexp');
-const initiativeParticipantSchema = require('./initiativeParticipant');
+const initiativeParticipantSchema = require('../base/initiativeParticipant');
 
 const enemySchema = mongoose.Schema({
     name: {

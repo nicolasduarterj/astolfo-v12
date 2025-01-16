@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Enemy = require('../../models/inimigo');
+const Enemy = require('../../models/main/inimigo');
 
 const commandData = new SlashCommandBuilder()
                             .setName('excluirinimigo')

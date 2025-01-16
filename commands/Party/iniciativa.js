@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const PlayerCharacter = require('../../models/playerCharacter');
+const PlayerCharacter = require('../../models/main/playerCharacter');
 const date = require('date-and-time');
-const Enemy = require('../../models/inimigo');
+const Enemy = require('../../models/main/inimigo');
 
 const commandData = new SlashCommandBuilder()
                             .setName('iniciativa')
