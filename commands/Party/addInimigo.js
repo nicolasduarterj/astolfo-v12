@@ -30,13 +30,13 @@ async function execute(interaction) {
         await newEnemy.save();
         await modalResponse.editReply('```fix\n' + `${newEnemy.name} foi criado.\n` + '```' );
     } catch (error) {
-        console.log(error)
         if (error.message.startsWith('Enemy validation failed:')) {
             await modalResponse.editReply('```diff\n-' + error.message + '\n```');
         }
         else if (error.message.startsWith('E11000')) {
             await modalResponse.editReply('```diff\n- Já existe um inimigo seu com esse nome\n```');
         } else {
+            console.log(error)
             await modalResponse.editReply('```diff\n- Ocorreu um erro inesperado.\n```');
         }
     }
