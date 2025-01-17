@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const spellsInfoSchema = require('../subdocuments/spellsInfo');
 const Xregexp = require('xregexp');
 const initiativeParticipantSchema = require('../base/initiativeParticipant');
 
@@ -38,10 +37,6 @@ const PlayerCharacterSchema = mongoose.Schema({
     worn: {
         type: mongoose.SchemaTypes.Boolean,
         default: false,
-    },
-    spellsInfo: {
-        type: spellsInfoSchema,
-        default: null,        
     },
 });
 
