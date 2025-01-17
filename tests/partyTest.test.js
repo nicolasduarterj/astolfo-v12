@@ -186,6 +186,48 @@ describe('Rolling initiative', () => {
         await iniciativa.execute(interaction);
         expect(interaction.results[interaction.results.length - 1]).toMatch(/party do user/);
     })
+
+    test('Rolling init. returns the rolls in decreasing order', async () => {
+        await partyUtils.registerBaseParty();
+        const interaction = new FakeInteraction([], '333');
+        await iniciativa.execute(interaction);
+        const result = interaction.results[interaction.results.length - 1];
+        const rollLines = result.split('\n').filter(line => /.+: \d+/.test(line));
+        const rolls = rollLines.map(line => line.match(/.+: (?<roll>\d+)/).groups.roll).map(roll => Number(roll));
+        const biggestRoll = rolls.reduce((biggest, next) => biggest > next ? biggest : next, rolls[0]);
+        expect(biggestRoll).toBe(rolls[0]);
+    })
+
+    test('Rolling init. with an enemy works', async () => {
+        await partyUtils.registerBaseParty();
+        await Enemy.create({
+            name: 'Orc',
+            ownerUUID: '333',
+            initiatveBonus: 2,
+            initiativeAdvantage: false,
+        });
+
+        const interaction = new FakeInteraction([], '333');
+        await iniciativa.execute(interaction);
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/Orc: \d+/);
+    })
+
+    test('Rolling init. with an enemy returns the rolls in decreasing order', async () => {
+        await Enemy.create({
+            name: 'Orc',
+            ownerUUID: '333',
+            initiatveBonus: 2,
+            initiativeAdvantage: false,
+        });
+        await partyUtils.registerBaseParty();
+        const interaction = new FakeInteraction([], '333');
+        await iniciativa.execute(interaction);
+        const result = interaction.results[interaction.results.length - 1];
+        const rollLines = result.split('\n').filter(line => /.+: \d+/.test(line));
+        const rolls = rollLines.map(line => line.match(/.+: (?<roll>\d+)/).groups.roll).map(roll => Number(roll));
+        const biggestRoll = rolls.reduce((biggest, next) => biggest > next ? biggest : next, rolls[0]);
+        expect(biggestRoll).toBe(rolls[0]);
+    })
 })
 
 afterAll(async () => {
