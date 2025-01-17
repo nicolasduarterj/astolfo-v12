@@ -8,15 +8,20 @@ const partyUtils = require('./testUtils/partyUtils');
 const entrarParty = require('../commands/Party/entrarParty');
 const sairParty = require('../commands/Party/sairParty');
 const iniciativa = require('../commands/Party/iniciativa');
+const addInimigo = require('../commands/Party/addInimigo');
+const excluirInimigo = require('../commands/Party/excluirInimigo');
+const Enemy = require('../models/main/inimigo')
 
 
 beforeAll(async () => {
     await mongoose.connect(process.env.TEST_DB_URI);
     await PlayerCharacter.deleteMany({});
+    await Enemy.deleteMany({});
 });
 
 afterEach(async () => {
     await PlayerCharacter.deleteMany({});
+    await Enemy.deleteMany({});
 })
 
 describe('Entering and leaving a party', () => {
@@ -94,6 +99,66 @@ describe('Entering and leaving a party', () => {
         const endChar = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
         expect(endChar.partyID).toBe('222');
         expect(interaction.results[interaction.results.length - 1]).toMatch(/use \/jogarcomo/);
+    })
+})
+
+describe('Adding and deleting enemies', () => {
+    test('Adding an enemy works', async () => {
+        const interaction = new FakeInteraction([], '111');
+        interaction.setModalResponses([
+            { id: 'name', value: 'Orc' },
+            { id: 'initiativeBonus', value: 2 },
+            { id: 'initiativeAdvantage', value: 'S' }
+        ]);
+
+        await addInimigo.execute(interaction);
+        const endEnemy = await Enemy.findOne({ ownerUUID: '111', name: 'Orc' });
+        expect(endEnemy).not.toBeNull();
+        expect(endEnemy.initiativeAdvantage).toBe(true);
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/foi criado/);
+    })
+
+    test('Cannot add an enemy with an invalid name', async () => {
+        const interaction = new FakeInteraction([], '111');
+        interaction.setModalResponses([
+            { id: 'name', value: '      Orc' },
+            { id: 'initiativeBonus', value: 2 },
+            { id: 'initiativeAdvantage', value: 'S' }
+        ]);
+
+        await addInimigo.execute(interaction);
+        const endEnemy = await Enemy.findOne({ ownerUUID: '111', name: '      Orc' });
+        expect(endEnemy).toBeNull();
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/validation failed/);
+    })
+
+    test('Cannot add an enemy with a NaN initiativeBonus', async () => {
+        const interaction = new FakeInteraction([], '111');
+        interaction.setModalResponses([
+            { id: 'name', value: 'Orc' },
+            { id: 'initiativeBonus', value: 'aidawdad' },
+            { id: 'initiativeAdvantage', value: 'S' }
+        ]);
+
+        await addInimigo.execute(interaction);
+        const endEnemy = await Enemy.findOne({ ownerUUID: '111', name: 'Orc' });
+        expect(endEnemy).toBeNull();
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/validation failed/);
+    })
+
+    test('Deleting an enemy works', async () => {
+        await Enemy.create({
+            name: 'Orc',
+            ownerUUID: '111',
+            initiativeBonus: 2,
+            initiativeAdvantage: false
+        });
+
+        const interaction = new FakeInteraction([{ name: 'name', value: 'Orc' }], '111');
+        await excluirInimigo.execute(interaction);
+        const endEnemy = await Enemy.findOne({ ownerUUID: '111', name: 'Orc' });
+        expect(endEnemy).toBeNull();
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/deletado/);
     })
 })
 

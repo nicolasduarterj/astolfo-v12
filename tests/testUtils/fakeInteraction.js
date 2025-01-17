@@ -38,6 +38,11 @@ class FakeInteraction {
         return;
     }
 
+    /**
+     * Creates a fake discord.js interaction
+     * @param {[{name: String, value: String}]} options 
+     * @param {String} userid 
+     */
     constructor(options, userid) {
         for (const option of options) {
             this.options.optionsHashMap[option.name] = option.value;
@@ -45,6 +50,10 @@ class FakeInteraction {
         this.user.id = userid;
     }
 
+    /**
+     * Sets the responses for awaitModalSubmit
+     * @param {[{id: String, value: String}]} options 
+     */
     setModalResponses(options) {
         for (const option of options) {
             this.fields.fieldsHashMap[option.id] = option.value;
