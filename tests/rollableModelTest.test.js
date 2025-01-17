@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { beforeAll, describe, expect, test, afterAll } = require('@jest/globals');
 const dotenv = require('dotenv')
 const BasicAction = require('../models/testing/basicAction');
+const PlayerCharacter = require('../models/main/playerCharacter')
 dotenv.config();
 
 beforeAll(async () => {
@@ -109,6 +110,37 @@ describe('Initialization of rollable actions', () => {
         const action = new BasicAction({ name: 'Teste' });
         action.initialize('d20');
         expect(action.dice[0].diceNumber).toBe(1);
+    })
+})
+
+describe('Character and rollable interactions', () => {
+    test('Can insert an attack into a character\'s attacks', async () => {
+        const Razalki = await PlayerCharacter.create({
+            name: 'Raz-alki',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: true,
+            ownerUUID: '111',
+            partyID: '222',
+            worn: true,
+        });
+        
+        Razalki.attacks.push({
+            name: 'Punch'
+        });
+        Razalki.attacks[0].initialize('2d4');
+        expect(Razalki.attacks[0]).toMatchObject({
+            dice: [{
+                diceNumber: 2,
+                diceType: 4,
+                bonus: 0
+            }],
+            flags: {
+                separate: false,
+                heal: false
+            }
+        })
     })
 })
 

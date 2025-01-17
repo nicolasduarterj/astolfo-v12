@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Xregexp = require('xregexp');
 const initiativeParticipantSchema = require('../base/initiativeParticipant');
+const attackSchema = require('../subdocuments/attack');
 
 const PlayerCharacterSchema = mongoose.Schema({
     name: {
@@ -38,6 +39,10 @@ const PlayerCharacterSchema = mongoose.Schema({
         type: mongoose.SchemaTypes.Boolean,
         default: false,
     },
+    attacks: {
+        type: [attackSchema],
+        default: [],
+    }
 });
 
 PlayerCharacterSchema.add(initiativeParticipantSchema);
