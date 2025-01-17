@@ -22,7 +22,6 @@ async function autocomplete(interaction) {
 async function execute(interaction) {
     await interaction.reply({ content: 'Processando...', ephemeral: true });
     const desiredCharName = interaction.options.getString('char');
-    console.log(desiredCharName);
     const desiredChar = await PlayerCharacter.findOne({ ownerUUID: interaction.user.id, name: desiredCharName })
     const alreadyWornChar = await PlayerCharacter.findOne({ ownerUUID: interaction.user.id, worn: true });
     if (!desiredChar) {
