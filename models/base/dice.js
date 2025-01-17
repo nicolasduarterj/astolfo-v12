@@ -7,7 +7,7 @@ const diceSchema = mongoose.Schema({
     },
     diceNumber: {
         type: mongoose.SchemaTypes.Number,
-        required: [true, 'Todos os dados devem ter um número.']
+        default: 1,
     },
     bonus: {
         type: mongoose.SchemaTypes.Number,

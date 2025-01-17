@@ -104,6 +104,12 @@ describe('Initialization of rollable actions', () => {
         const action = new BasicAction({ name: 'Teste' });
         expect(() => action.initialize('2d20,2d4+2,,3d6/s')).toThrow(/validation failed/);
     });
+
+    test('Lacking diceNumbers default to 1', async () => {
+        const action = new BasicAction({ name: 'Teste' });
+        action.initialize('d20');
+        expect(action.dice[0].diceNumber).toBe(1);
+    })
 })
 
 afterAll(async () => {
