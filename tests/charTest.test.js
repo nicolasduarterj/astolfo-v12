@@ -9,6 +9,7 @@ const dano = require('../commands/Chars/dano');
 const cura = require('../commands/Chars/cura');
 const excluirChar = require('../commands/Chars/excluirChar');
 const jogarcomo = require('../commands/Chars/jogarComo');
+const parardejogar = require('../commands/Chars/pararDeJogar');
 
 beforeAll(async () => {
     await mongoose.connect(process.env.TEST_DB_URI);
@@ -276,6 +277,40 @@ describe('Character deletion and wearing', () => {
         const endCharIlia = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Ilia' });
         expect(endCharRaz.worn).toBe(false);
         expect(endCharIlia.worn).toBe(true);
+    })
+
+    test('Can stop wearing a character', async () => {
+        await PlayerCharacter.create({
+            name: 'Raz-alki',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: true,
+            ownerUUID: '111',
+            partyID: null,
+            worn: true,
+        });
+        
+        const interaction = new FakeInteraction([], '111');
+        await parardejogar.execute(interaction);
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/parou de jogar como/);
+    })
+
+    test('Trying to stop wearing a character without wearing one does not work', async () => {
+        await PlayerCharacter.create({
+            name: 'Raz-alki',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: true,
+            ownerUUID: '111',
+            partyID: null,
+            worn: false,
+        });
+
+        const interaction = new FakeInteraction([], '111');
+        await parardejogar.execute(interaction);
+        expect(interaction.results[interaction.results.length - 1]).toMatch(/já não está jogando/);
     })
 })
 
