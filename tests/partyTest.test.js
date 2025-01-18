@@ -10,7 +10,8 @@ const sairParty = require('../commands/Party/sairParty');
 const iniciativa = require('../commands/Party/iniciativa');
 const addInimigo = require('../commands/Party/addInimigo');
 const excluirInimigo = require('../commands/Party/excluirInimigo');
-const Enemy = require('../models/main/inimigo')
+const Enemy = require('../models/main/inimigo');
+const statusParty = require('../commands/Party/statusParty');
 
 
 beforeAll(async () => {
@@ -228,6 +229,100 @@ describe('Rolling initiative', () => {
         const biggestRoll = rolls.reduce((biggest, next) => biggest > next ? biggest : next, rolls[0]);
         expect(biggestRoll).toBe(rolls[0]);
     })
+})
+
+describe('Status commands', () => {
+    test('Party status with a worn character returns the worn character\'s party status', async () => {
+        const [razalki, ilia, sinep] = await partyUtils.registerBaseParty();
+        const newChar = await PlayerCharacter.create({
+            name: 'VAAR',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: false,
+            ownerUUID: '111',
+            partyID: '333',
+            worn: true
+        });
+
+        const interaction = new FakeInteraction([], '111');
+        await statusParty.execute(interaction);
+        const response = interaction.results[interaction.results.length - 1];
+        const statuses = response.match(/^(.+: \d+)$/mg)
+            .map(statusString => statusString.match(/(?<name>.+): (?<hp>\d+)/).groups);
+        const iliaStatusObj = statuses.find(statusObj => statusObj.name === ilia.name);
+        const razalkiStatusObj = statuses.find(statusObj => statusObj.name === razalki.name);
+        const sinepStatusObj = statuses.find(statusObj => statusObj.name === sinep.name);
+        const newCharStatusObj = statuses.find(statusObj => statusObj.name === newChar.name);
+
+        expect(Number(iliaStatusObj.hp)).toBe(ilia.hp);
+        expect(Number(razalkiStatusObj.hp)).toBe(razalki.hp);
+        expect(Number(sinepStatusObj.hp)).toBe(sinep.hp);
+        expect(Number(newCharStatusObj.hp)).toBe(newChar.hp);
+    })
+
+    test('Party status without a worn character returns the player\'s party status', async () => {
+        const [razalki, ilia, sinep] = await partyUtils.registerBaseParty();
+        const interaction = new FakeInteraction([], '333');
+        await statusParty.execute(interaction);
+        const response = interaction.results[interaction.results.length - 1];
+        const statuses = response.match(/^(.+: \d+)$/mg)
+            .map(statusString => statusString.match(/(?<name>.+): (?<hp>\d+)/).groups);
+        const iliaStatusObj = statuses.find(statusObj => statusObj.name === ilia.name);
+        const razalkiStatusObj = statuses.find(statusObj => statusObj.name === razalki.name);
+        const sinepStatusObj = statuses.find(statusObj => statusObj.name === sinep.name);
+
+        expect(Number(iliaStatusObj.hp)).toBe(ilia.hp);
+        expect(Number(razalkiStatusObj.hp)).toBe(razalki.hp);
+        expect(Number(sinepStatusObj.hp)).toBe(sinep.hp);
+    })
+
+    test('Party status with a party-less worn character return\'s a player\'s party status', async () => {
+        await partyUtils.registerBaseParty();
+        await PlayerCharacter.create({
+            name: 'VAAR',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: false,
+            ownerUUID: '333',
+            partyID: null,
+            worn: true
+        });
+
+        const interaction = new FakeInteraction([], '333');
+        await statusParty.execute(interaction);
+        const response = interaction.results[interaction.results.length - 1];
+        expect(response).toMatch(/party do user/m);
+    })
+
+    test('Party status with a party-less worn character and an empty player party returns an error message', async () => {
+        await partyUtils.registerBaseParty();
+        await PlayerCharacter.create({
+            name: 'VAAR',
+            baseHP: 12,
+            hp: 12,
+            initiativeBonus: 2,
+            initiativeAdvantage: false,
+            ownerUUID: '111',
+            partyID: null,
+            worn: true
+        });
+
+        const interaction = new FakeInteraction([], '111');
+        await statusParty.execute(interaction);
+        const response = interaction.results[interaction.results.length - 1];
+        expect(response).toMatch(/Não consegui achar/m);
+    })
+
+    test('Party status without a worn character and an empty player party returns an error message', async () => {
+        await partyUtils.registerBaseParty();
+        const interaction = new FakeInteraction([], '111');
+        await statusParty.execute(interaction);
+        const response = interaction.results[interaction.results.length - 1];
+        expect(response).toMatch(/Não consegui achar/m);
+    })
+
 })
 
 afterAll(async () => {
