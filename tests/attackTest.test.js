@@ -95,8 +95,6 @@ describe('Adding attacks', () => {
         await addAttack.execute(interaction);
         const secondInteraction = new FakeInteraction([{ name: 'name', value: 'Punch' }, { name: 'dice', value: '2d4' }], '111');
         await addAttack.execute(secondInteraction);
-        const Razalki = await PlayerCharacter.findOne({ ownerUUID: '111', name: 'Raz-alki' });
-        console.log(Razalki.attacks);
         expect(secondInteraction.results[secondInteraction.results.length - 1]).toMatch(/já tem um ataque com esse nome/);
     })
 
