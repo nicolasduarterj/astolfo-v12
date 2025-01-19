@@ -15,6 +15,7 @@ class DiceQueue {
         if (dices.length < 1)
             throw new Error('The queue must start with at least one dice');
         this.items = isSeparate ? dices.map(dice => [dice]) : [dices];
+        this.isEmpty = false;
     }
 
     /**
@@ -26,10 +27,10 @@ class DiceQueue {
         const target = this.items[0]; //target: [diceSchema]
         const rolls = target.map(dice => dice.roll());
         this.items.shift();
+        this.isEmpty = !(this.items.length);
         return {
             rolledDice: rolls.map(roll => roll.diceString).join(','),
             rolls: rolls,
-            isQueueEmpty: this.items.length < 1
         }
     }
 }

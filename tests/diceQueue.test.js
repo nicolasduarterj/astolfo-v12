@@ -45,7 +45,7 @@ describe('DiceQueue popping', () => {
         const dq = new DiceQueue(punch.dice, punch.flags.separate);
         const roll = dq.rollAndPop();
         expect(roll.rolledDice).toMatch(/2d20\+2/);
-        expect(roll.isQueueEmpty).toBe(true);
+        expect(dq.isEmpty).toBe(true);
         expect(roll.rolls.length).not.toBe(0);
         console.log(roll);
     })
@@ -55,7 +55,7 @@ describe('DiceQueue popping', () => {
         const dq = new DiceQueue(punch.dice, punch.flags.separate);
         const roll = dq.rollAndPop();
         expect(roll.rolledDice).toMatch(/2d20\+2/);
-        expect(roll.isQueueEmpty).toBe(false);
+        expect(dq.isEmpty).toBe(false);
         expect(roll.rolls.length).not.toBe(0);
         expect(dq.items.length).toBe(1);
     })
