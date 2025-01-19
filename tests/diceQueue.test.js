@@ -1,7 +1,5 @@
-const mongoose = require('mongoose');
-const { beforeAll, describe, expect, test, afterAll } = require('@jest/globals');
+const { describe, expect, test, } = require('@jest/globals');
 const dotenv = require('dotenv')
-const PlayerCharacter = require('../models/main/playerCharacter')
 const DiceQueue = require('../misc/diceQueue');
 const BasicAction = require('../models/testing/basicAction');
 dotenv.config();
