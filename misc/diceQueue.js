@@ -33,6 +33,10 @@ class DiceQueue {
             rolls: rolls,
         }
     }
+
+    peek() {
+        return this.items[0];
+    }
 }
 
 module.exports = DiceQueue;
