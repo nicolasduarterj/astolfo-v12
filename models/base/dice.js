@@ -21,11 +21,12 @@ diceSchema.methods.roll = function() {
         results.push(Math.floor(Math.random() * this.diceType + 1));
     }
     const sum = results.reduce((acc, next) => acc + next);
+    const bonusString = `${this.bonus > 0 ? '+' : ''}${this.bonus ? this.bonus : ''}`
     return {
         results,
         sum,
         sumWithBonus: sum + this.bonus,
-        diceString: `${this.diceNumber}d${this.diceType}+${this.bonus}`
+        diceString: `${this.diceNumber}d${this.diceType}${bonusString}`
     };
 }
 
