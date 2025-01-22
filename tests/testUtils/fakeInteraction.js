@@ -1,3 +1,5 @@
+const FakeResponse = require("./fakeResponse");
+
 class FakeInteraction {
     options = {
         optionsHashMap: {},
@@ -17,21 +19,18 @@ class FakeInteraction {
             return this.fieldsHashMap[id];
         }
     }
-    results = [];
-    user = {};
-    replied = false;
     async reply(string) {
         if (this.replied) {
             throw new Error('already replied');
         }
         this.results.push(string);
         this.replied = true;
-        return string;
+        return this.response;
     }
 
     async editReply(string) {
         this.results.push(string);
-        return string;
+        return this.response;
     }
 
     async showModal() {
@@ -47,7 +46,11 @@ class FakeInteraction {
         for (const option of options) {
             this.options.optionsHashMap[option.name] = option.value;
         }
+        this.user = {};
         this.user.id = userid;
+        this.response = new FakeResponse(userid);
+        this.results = [];
+        this.replied = false;
     }
 
     /**

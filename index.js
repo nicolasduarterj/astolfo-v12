@@ -8,7 +8,7 @@ const path = require('node:path');
 
 //-----------------[Startup]---------------------------------------//
 dotenv.config();
-const client = new Client({ intents: GatewayIntentBits.Guilds });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions] });
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);

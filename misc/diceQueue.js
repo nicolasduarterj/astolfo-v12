@@ -31,6 +31,7 @@ class DiceQueue {
         return {
             rolledDice: rolls.map(roll => roll.diceString).join(','),
             rolls: rolls,
+            total: rolls.reduce((acc, next) => acc + next.sumWithBonus, 0)
         }
     }
 

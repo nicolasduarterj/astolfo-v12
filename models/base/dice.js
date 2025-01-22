@@ -26,7 +26,8 @@ diceSchema.methods.roll = function() {
         results,
         sum,
         sumWithBonus: sum + this.bonus,
-        diceString: `${this.diceNumber}d${this.diceType}${bonusString}`
+        diceString: `${this.diceNumber}d${this.diceType}${bonusString}`,
+        bonus: this.bonus,
     };
 }
 
