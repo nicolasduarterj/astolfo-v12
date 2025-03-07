@@ -1,9 +1,10 @@
 # Astolfo: a discord bot for Dungeons & Dragons
 
-Astolfo is designed to make playing DnD over Discord, providing:
+Astolfo is designed to make playing DnD over Discord easy, providing:
 - Player Character management
 - Initiative and turn management
 - Attack and roll management
+- Party management
 
 ## Setup
 
